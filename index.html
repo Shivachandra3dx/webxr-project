@@ -22,10 +22,8 @@
       font-size: 12px;
     }
     #ar-button {
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
+      display: block;
+      margin: 10px auto;
       padding: 10px 20px;
       font-size: 16px;
       background: #007bff;
@@ -33,6 +31,9 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+    }
+    #ar-button:hover {
+      background: #0056b3;
     }
     #ar-prompt {
       position: absolute;
@@ -48,6 +49,8 @@
   </style>
 </head>
 <body>
+  <button id="ar-button">View in AR</button>
+  
   <model-viewer 
     src="https://cdn.glitch.global/2762574e-c385-422d-a1a4-905f5da98282/laptop.glb?v=1735399195477" 
     ios-src="https://cdn.glitch.global/2762574e-c385-422d-a1a4-905f5da98282/laptop.usdz?v=1735399205423"
@@ -80,16 +83,20 @@
     <div class="progress-bar hide" slot="progress-bar">
       <div class="update-bar"></div>
     </div>
-    <button slot="ar-button" id="ar-button">
-      View in your space
-    </button>
     <div id="ar-prompt">
       <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
     </div>
   </model-viewer>
 
   <script>
+    const arButton = document.getElementById('ar-button');
     const modelViewer = document.getElementById('viewer');
+
+    // Add event listener for "View in AR" button
+    arButton.addEventListener('click', () => {
+      modelViewer.activateAR();
+    });
+
     let isZoomedIn = false; // Tracks the zoom state
     let defaultCameraOrbit = modelViewer.getAttribute('camera-orbit');
 
