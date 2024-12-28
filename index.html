@@ -1,29 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Camera Access Test</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-ar.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Laptop Viewer</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100vh;
+    }
+    .HotspotAnnotation {
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+    #ar-button {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #ar-prompt {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      display: none;
+    }
+    #ar-prompt img {
+      width: 40px;
+    }
+  </style>
+</head>
+<body>
+  <model-viewer 
+    src="https://cdn.glitch.global/2762574e-c385-422d-a1a4-905f5da98282/laptop.glb?v=1735399195477" 
+    ios-src="https://cdn.glitch.global/2762574e-c385-422d-a1a4-905f5da98282/laptop.usdz?v=1735399205423"
+    ar 
+    ar-modes="webxr scene-viewer quick-look" 
+    camera-controls 
+    tone-mapping="neutral" 
+    poster="poster.webp" 
+    shadow-intensity="1.74" 
+    exposure="1"
+    field-of-view="30deg"
+    id="viewer">
+    
+    <button class="Hotspot" slot="hotspot-1" data-position="-1.642m 2.28m -1.855m" data-normal="0.982m 0.19m 0m">
+      <div class="HotspotAnnotation">15" Display</div>
+    </button>
+    <button class="Hotspot" slot="hotspot-2" data-position="-1.603m 2.08m 1.745m" data-normal="0.982m 0.19m 0m">
+      <div class="HotspotAnnotation">Long Battery Life</div>
+    </button>
+    <button class="Hotspot" slot="hotspot-3" data-position="1.193m 0.07m -1.801m" data-normal="0m 1m 0m">
+      <div class="HotspotAnnotation">Lightweight Build</div>
+    </button>
+    <button class="Hotspot" slot="hotspot-4" data-position="0.186m 0.078m 1.59m" data-normal="1m 0m 0m">
+      <div class="HotspotAnnotation">Backlit Keyboard</div>
+    </button>
+    <button class="Hotspot" slot="hotspot-5" data-position="-1.252m 0.25m -1.646m" data-normal="0.994m -0.108m 0m">
+      <div class="HotspotAnnotation">SSD Storage</div>
+    </button>
+    
+    <div class="progress-bar hide" slot="progress-bar">
+      <div class="update-bar"></div>
+    </div>
+    <button slot="ar-button" id="ar-button">
+      View in your space
+    </button>
+    <div id="ar-prompt">
+      <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+    </div>
+  </model-viewer>
+
+  <script>
+    const modelViewer = document.getElementById('viewer');
+    let isZoomedIn = false; // Tracks the zoom state
+    let defaultCameraOrbit = modelViewer.getAttribute('camera-orbit');
+
+    // Handle hotspot clicks
+    modelViewer.addEventListener('click', (event) => {
+      const hotspot = event.target.closest('.Hotspot');
+      if (hotspot) {
+        const position = hotspot.getAttribute('data-position');
+        if (!isZoomedIn) {
+          modelViewer.cameraOrbit = position.replace(/m/g, '') + ' 1m';
+          modelViewer.fieldOfView = '15deg'; // Narrow the view when zooming in
+          isZoomedIn = true;
+        } else {
+          modelViewer.cameraOrbit = defaultCameraOrbit;
+          modelViewer.fieldOfView = '30deg'; // Reset the view
+          isZoomedIn = false;
+        }
       }
-    </style>
-  </head>
-  <body>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
-      <!-- Camera -->
-      <a-camera></a-camera>
-
-      <!-- AR Environment -->
-      <a-light type="ambient" intensity="0.5"></a-light>
-      <a-light type="directional" position="3 3 3" intensity="0.7" color="#FF6347"></a-light>
-
-      <!-- AR Plane (test surface) -->
-      <a-plane rotation="-90 0 0" position="0 -1 0" width="10" height="10" color="#7BC8A4"></a-plane>
-    </a-scene>
-  </body>
+    });
+  </script>
+</body>
 </html>
