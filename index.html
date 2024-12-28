@@ -17,11 +17,12 @@
     <a-scene
       vr-mode-ui="enabled: false"
       webxr="optionalFeatures: hit-test"
-      arjs="sourceType: webcam; debugUIEnabled: false;">
+      arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
       
       <!-- Assets -->
       <a-assets>
-        <a-asset-item id="3dmodel" src="model.glb"></a-asset-item>
+        <!-- Using the raw GitHub URL for the model -->
+        <a-asset-item id="3dmodel" src="https://raw.githubusercontent.com/Shivachandra3dx/webxr-project/main/model.glb"></a-asset-item>
       </a-assets>
 
       <!-- Lights for better visualization -->
