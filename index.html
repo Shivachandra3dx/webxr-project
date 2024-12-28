@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3D Model Viewer</title>
+    <title>AR 3D Model Viewer</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-ar.js"></script>
     <style>
       body {
         margin: 0;
@@ -13,22 +14,46 @@
     </style>
   </head>
   <body>
-    <a-scene>
+    <a-scene 
+      embedded 
+      arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
+
+      <!-- Set background to transparent or light color (optional) -->
+      <a-sky color="#ECECEC"></a-sky>
+
+      <!-- Add a ground or plane (optional) -->
+      <a-plane rotation="-90 0 0" position="0 -1 0" width="10" height="10" color="#7BC8A4"></a-plane>
+
       <!-- Assets -->
       <a-assets>
-        <!-- Make sure this path is correct, and check the raw file URL -->
-        <a-asset-item id="3dmodel" src="./model.glb"></a-asset-item>
+        <!-- 3D model -->
+        <a-asset-item id="3dmodel" src= "./model.glb"></a-asset-item>
       </a-assets>
 
       <!-- Lights for better visualization -->
-      <a-light type="ambient" intensity="0.5"></a-light>
-      <a-light type="directional" position="0 5 5" intensity="1"></a-light>
+      <a-light type="ambient" intensity="0.5"></a-light>  <!-- Ambient light -->
+      <a-light type="directional" position="3 3 3" intensity="0.7" color="#FF6347"></a-light>  <!-- Directional light -->
 
-      <!-- Camera -->
-      <a-camera position="0 0 5"></a-camera>
+      <!-- Camera with AR settings -->
+      <a-camera gps-camera rotation-reader></a-camera>
 
-      <!-- 3D Model -->
-      <a-entity gltf-model="#3dmodel" position="0 0 0" scale="0.2 0.2 0.2"></a-entity>
+      <!-- 3D Model (Set initial position to visible on tap) -->
+      <a-entity id="model" gltf-model="#3dmodel" position="0 0 0" scale="0.2 0.2 0.2" visible="false"></a-entity>
+
+      <!-- AR Hit Test (Tap to place the model) -->
+      <script>
+        // When AR hit-test detects a surface, place the model
+        AFRAME.registerComponent('place-model', {
+          init: function () {
+            const model = document.getElementById('model');
+            this.el.sceneEl.addEventListener('xr-hit-test-select', (event) => {
+              const position = event.detail.intersection.point;
+              model.setAttribute('position', position);
+              model.setAttribute('visible', true);
+            });
+          }
+        });
+      </script>
     </a-scene>
   </body>
 </html>
